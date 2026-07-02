@@ -7,6 +7,7 @@ from app.models.user import User
 from app.schemas.user import UserSchema
 from app.utils.auth import role_required, get_current_user
 from app.utils.errors import NotFoundException, ValidationError, ForbiddenException
+from app.utils.sanitize import sanitize
 
 users_bp = Blueprint('users', __name__)
 user_schema = UserSchema()
@@ -69,7 +70,7 @@ def update_user(user_id):
     if not user:
         raise NotFoundException('User not found.')
 
-    data = request.get_json() or {}
+    data = sanitize(request.get_json() or {})
     allowed = ('name', 'role', 'availability_status', 'expertise_areas')
     for field in allowed:
         if field in data:
